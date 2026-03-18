@@ -5,9 +5,18 @@ Answer each question in 3 to 5 sentences. Be specific and honest about what actu
 ## 1. What was broken when you started?
 
 - What did the game look like the first time you ran it?
+
+  The game looked like a basic guessing game where you guess a number between 1 and 100 with 7 attempts left.
+  There is a developer debug info which tells you the secret number, the amount of attempts you made, and your score.
+  There is a text box to enter your guess and right under it there's buttons in a row 
+  where you submit your guess, make a new game, and show a hint.
+
 - List at least two concrete bugs you noticed at the start  
   (for example: "the secret number kept changing" or "the hints were backwards").
 
+  The hint button does tells you to go higher when lower or vice versa.
+  You cannot submit new guesses after the game is finished.
+  
 ---
 
 ## 2. How did you use AI as a teammate?
@@ -16,14 +25,26 @@ Answer each question in 3 to 5 sentences. Be specific and honest about what actu
 - Give one example of an AI suggestion that was correct (including what the AI suggested and how you verified the result).
 - Give one example of an AI suggestion that was incorrect or misleading (including what the AI suggested and how you verified the result).
 
+I used Claude as my AI tool.
+An AI suggestion that was correct was to change "Too High, Go Higher" to say "Too High, Go Lower" and vice versa. I verified the result by guessing a higher number than the secret and it gave the correct hint.
+
+An AI suggestion that was misleading was to create a new file to run code in the testing file when I just wanted it to be in the same file
+
 ---
+
 
 ## 3. Debugging and testing your fixes
 
 - How did you decide whether a bug was really fixed?
+I decided a bug was really fixed when the pytest that was made for it ran without failing
+
 - Describe at least one test you ran (manual or using pytest)  
   and what it showed you about your code.
+
+  A test that I ran was checking the guess message and whether it showed the correct message when guessing higher or lower. 
+
 - Did AI help you design or understand any tests? How?
+AI did help me design tests since it made it easier to understand what to actually test for.
 
 ---
 
