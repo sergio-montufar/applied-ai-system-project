@@ -51,8 +51,16 @@ AI did help me design tests since it made it easier to understand what to actual
 ## 4. What did you learn about Streamlit and state?
 
 - In your own words, explain why the secret number kept changing in the original app.
+
+The original bug was that the secret was regenerated on every rerun because the if "secret" not in st.session_state guard was missing or the secret was being reset unconditionally on each script execution, meaning every interaction caused Streamlit to re-run the script and pick a new random number.
+
 - How would you explain Streamlit "reruns" and session state to a friend who has never used Streamlit?
+
+Every time a user interacts with a Streamlit app, the entire script reruns from scratch, meaning normal variables reset and disappear. Session state is a persistent dictionary that survives those reruns, letting you hold onto things like a secret number across button clicks.
+
 - What change did you make that finally gave the game a stable secret number?
+
+The fix was wrapping the secret number generation in an if "secret" not in st.session_state guard, so it only runs once on the very first load instead of every rerun. This stores the secret in st.session_state, where it persists across all subsequent reruns until the user explicitly starts a new game.
 
 ---
 
@@ -60,5 +68,14 @@ AI did help me design tests since it made it easier to understand what to actual
 
 - What is one habit or strategy from this project that you want to reuse in future labs or projects?
   - This could be a testing habit, a prompting strategy, or a way you used Git.
+
+  I want to reuse the habit of testing since it is very useful to do for stuff like this.
+
 - What is one thing you would do differently next time you work with AI on a coding task?
+
+I would make sure to check everything the AI does before it changes any code in any file.
+
+
 - In one or two sentences, describe how this project changed the way you think about AI generated code.
+
+It changed the way I think about AI generated code by making sure everything is correct and to not blindly trust it.
