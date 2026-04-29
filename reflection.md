@@ -79,3 +79,24 @@ I would make sure to check everything the AI does before it changes any code in 
 - In one or two sentences, describe how this project changed the way you think about AI generated code.
 
 It changed the way I think about AI generated code by making sure everything is correct and to not blindly trust it.
+
+---
+
+## 6. Final Reflection: AI Hint Reliability System
+
+### What are the limitations or biases in your system?
+
+The reliability check is direction-only, so the AI could write a misleading message (for example "you're so close!" when the guess is off by 100) and still pass verification because the direction is correct. The reliability test harness only covers 10 (guess, secret) cases, so an 80% pass rate could miss regressions that only affect a narrow slice of inputs. The whole pattern also depends on having a deterministic ground truth — it works for number guessing because correctness is exactly computable, but it would not transfer to tasks where "right" is subjective. As a bias, the system is English-only: the prompt, fallback messages, and AI training all assume English speakers.
+
+### Could your AI be misused, and how would you prevent that?
+
+For this specific app the misuse risk is low — it generates one-sentence hints for a guessing game. But the same architecture (LLM with a single verifier) could be misused if the verifier is too narrow. If I only checked direction and not content, the AI could pass surface-level checks while embedding misleading or harmful text in the message itself. The prevention is to never let one verifier do all the work: I layered three independent checks (direction match, secret-leak detection, exception handling), and crucially I never trust the LLM's self-assessment — every verdict comes from an external source of truth, not from asking the model "are you sure?".
+
+### What surprised you while testing your AI's reliability?
+
+The biggest surprise was that **rate limits, not AI hallucinations, were the dominant failure mode**. I built the reliability layer expecting to catch directional mistakes, but in practice the AI almost always got the direction right on simple integer comparisons. The fallback fired most often because the API was unavailable. It was hitting free-tier rate limits and daily quotas. That actually validated the design: the reliability layer protects against *any* failure mode (network error, quota, hallucination, secret leak), not just the one I was originally thinking about.
+
+### Describe your collaboration with AI during this project.
+
+- **Helpful suggestion**: When I was deciding between confidence scoring and external verification, the AI pointed out that confidence scoring asks the same fallible model to grade itself, while external verification compares against an independent source of truth. That reframing led directly to the architecture I shipped. Every AI hint is checked against `check_guess()` before it reaches the player.
+- **Flawed suggestion**: When scaffolding the test harness, the AI initially set the sleep between API calls to 5 seconds, which was less than half of what was needed for Gemini's 5 RPM free-tier limit (one call every 12 seconds minimum). I did not catch the math until tests started failing with 429 errors — only then did we bump the sleep to 13 seconds. The lesson was that even with helpful AI assistance, I have to double-check the math on real-world constraints like rate limits, because the AI does not always reason quantitatively about them.

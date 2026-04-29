@@ -81,6 +81,12 @@ A full Mermaid diagram is included in the source folder.
    pytest
    ```
 
+7. Run the standalone evaluation script for a human-readable reliability report:
+   ```
+   python3 evaluate.py
+   ```
+   Prints a per-case PASS/FAIL table, direction-agreement rate, secret-leak count, latency per call, and an overall PASS/FAIL verdict. Exits with code 0 on PASS and 1 on FAIL, so it can be wired into CI later.
+
 ## Sample Interactions
 
 **Example 1 — AI hint agrees with ground truth (shown to player)**
@@ -124,6 +130,8 @@ This third example is exactly the safety net the reliability layer is designed f
 - **Why not RAG or fine-tuning.** A number-guessing game has no external knowledge to retrieve and no specialized vocabulary worth fine-tuning on. A reliability layer was the AI feature that meaningfully changed how the system behaves.
 
 ## Testing Summary
+
+Reliability is verified at three layers: deterministic unit tests (`tests/test_game_logic.py`), an AI agreement-rate harness (`tests/test_ai_reliability.py`), and a live runtime evaluator that checks every AI hint against ground truth before displaying it (`reliability.py`). Every failure — exception, direction mismatch, or secret leak — is logged to `logs/ai_failures.jsonl` for audit.
 
 **What worked**
 - The original `pytest` suite for `check_guess`, `update_score`, and `get_range_for_difficulty` passes cleanly and gave me confidence to refactor.
