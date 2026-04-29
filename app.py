@@ -1,6 +1,7 @@
 import random
 import streamlit as st
 from logic_utils import check_guess, get_range_for_difficulty, parse_guess, update_score
+from reliability import get_verified_hint
 
 st.set_page_config(page_title="Glitchy Guesser", page_icon="🎮")
 
@@ -104,7 +105,17 @@ if submit:
         outcome, message = check_guess(guess_int, secret)
 
         if show_hint:
-            st.warning(message)
+            if outcome == "Win":
+                st.warning(message)
+            else:
+                attempts_left = attempt_limit - st.session_state.attempts
+                verified = get_verified_hint(guess_int, secret, attempts_left)
+                if verified.source == "ai":
+                    st.warning(f"🤖 {verified.message}")
+                else:
+                    st.warning(
+                        f"⚠️ AI hint failed verification — using safe fallback: {verified.message}"
+                    )
 
         st.session_state.score = update_score(
             current_score=st.session_state.score,
